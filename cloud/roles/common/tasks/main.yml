@@ -1,0 +1,33 @@
+---
+# common tasks for all hosts
+
+- name: upgrade system
+  pacman:
+    update_cache: yes
+    upgrade: yes
+
+- name: install packages
+  pacman:
+    name:
+    - htop
+    - pacman-contrib
+    - tree
+    - zsh
+    - grml-zsh-config
+
+- name: change root shell
+  user:
+    name: root
+    shell: "/bin/zsh"
+
+- name: update /etc/ssh/sshd_config
+  blockinfile:
+    path: /etc/ssh/sshd_config
+    backup: yes
+    insertbefore: "^#?PermitRootLogin"
+    block: |
+      PermitRootLogin prohibit-password
+      PasswordAuthentication no
+    validate: /usr/bin/sshd -T -f %s
+  notify:
+  - reload sshd

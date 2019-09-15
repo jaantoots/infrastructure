@@ -1,0 +1,7 @@
+---
+# handlers
+
+- name: reload sshd
+  systemd:
+    name: sshd.service
+    state: reloaded

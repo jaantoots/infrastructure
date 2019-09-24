@@ -1,11 +1,11 @@
-resource "cloudflare_record" "mail-a-1" {
+resource "cloudflare_record" "mail-a1" {
   domain = "${var.cloudflare_zone}"
   name   = "mail"
   type   = "A"
   value  = "66.111.4.147"
 }
 
-resource "cloudflare_record" "mail-a-2" {
+resource "cloudflare_record" "mail-a2" {
   domain = "${var.cloudflare_zone}"
   name   = "mail"
   type   = "A"

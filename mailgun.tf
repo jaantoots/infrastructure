@@ -5,7 +5,7 @@ resource "cloudflare_record" "email_mg" {
   value  = "mailgun.org"
 }
 
-resource "cloudflare_record" "mg-mx-1" {
+resource "cloudflare_record" "mg-mx1" {
   domain   = "${var.cloudflare_zone}"
   name     = "mg"
   type     = "MX"
@@ -13,7 +13,7 @@ resource "cloudflare_record" "mg-mx-1" {
   priority = 10
 }
 
-resource "cloudflare_record" "mg-mx-2" {
+resource "cloudflare_record" "mg-mx2" {
   domain   = "${var.cloudflare_zone}"
   name     = "mg"
   type     = "MX"

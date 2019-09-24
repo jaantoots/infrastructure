@@ -1,29 +1,23 @@
-resource "cloudflare_record" "cloud-a" {
+resource "linode_instance" "cloud" {
+  label            = "arch-eu-central"
+  region           = "eu-central"
+  type             = "g6-nanode-1"
+  authorized_users = ["${data.linode_profile.me.username}"]
+  image            = "linode/arch"
+}
+
+resource "cloudflare_record" "cloud" {
   domain = "${var.cloudflare_zone}"
   name   = "cloud"
   type   = "A"
-  value  = "178.128.251.243"
+  value  = "${linode_instance.cloud.ip_address}"
 }
 
-resource "cloudflare_record" "cloud-aaaa" {
+resource "cloudflare_record" "cloud6" {
   domain = "${var.cloudflare_zone}"
   name   = "cloud"
   type   = "AAAA"
-  value  = "2a03:b0c0:2:f0::61:1001"
-}
-
-resource "cloudflare_record" "git" {
-  domain = "${var.cloudflare_zone}"
-  name   = "git"
-  type   = "CNAME"
-  value  = "cloud.${var.cloudflare_zone}"
-}
-
-resource "cloudflare_record" "photos" {
-  domain = "${var.cloudflare_zone}"
-  name   = "photos"
-  type   = "CNAME"
-  value  = "cloud.${var.cloudflare_zone}"
+  value  = split("/", "${linode_instance.cloud.ipv6}")[0]
 }
 
 resource "cloudflare_record" "www" {

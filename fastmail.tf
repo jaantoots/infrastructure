@@ -12,6 +12,28 @@ resource "cloudflare_record" "mail-a-2" {
   value  = "66.111.4.148"
 }
 
+locals {
+  mx_names = ["*", "${var.cloudflare_zone}", "mail", "www", "cloud"]
+}
+
+resource "cloudflare_record" "mx1" {
+  for_each = toset(local.mx_names)
+  domain   = "${var.cloudflare_zone}"
+  name     = each.value
+  type     = "MX"
+  value    = "in1-smtp.messagingengine.com"
+  priority = 10
+}
+
+resource "cloudflare_record" "mx2" {
+  for_each = toset(local.mx_names)
+  domain   = "${var.cloudflare_zone}"
+  name     = each.value
+  type     = "MX"
+  value    = "in2-smtp.messagingengine.com"
+  priority = 20
+}
+
 resource "cloudflare_record" "fm1_domainkey" {
   domain = "${var.cloudflare_zone}"
   name   = "fm1._domainkey"
@@ -40,84 +62,11 @@ resource "cloudflare_record" "mesmtp_domainkey" {
   value  = "mesmtp.${var.cloudflare_zone}.dkim.fmhosted.com"
 }
 
-resource "cloudflare_record" "mx-1" {
-  domain   = "${var.cloudflare_zone}"
-  name     = "*"
-  type     = "MX"
-  value    = "in1-smtp.messagingengine.com"
-  priority = 10
-}
-
-resource "cloudflare_record" "mx-2" {
-  domain   = "${var.cloudflare_zone}"
-  name     = "*"
-  type     = "MX"
-  value    = "in2-smtp.messagingengine.com"
-  priority = 20
-}
-
-resource "cloudflare_record" "root-mx-1" {
-  domain   = "${var.cloudflare_zone}"
-  name     = "${var.cloudflare_zone}"
-  type     = "MX"
-  value    = "in1-smtp.messagingengine.com"
-  priority = 10
-}
-
-resource "cloudflare_record" "root-mx-2" {
-  domain   = "${var.cloudflare_zone}"
-  name     = "${var.cloudflare_zone}"
-  type     = "MX"
-  value    = "in2-smtp.messagingengine.com"
-  priority = 20
-}
-
-resource "cloudflare_record" "mail-mx-1" {
-  domain   = "${var.cloudflare_zone}"
-  name     = "mail"
-  type     = "MX"
-  value    = "in1-smtp.messagingengine.com"
-  priority = 10
-}
-
-resource "cloudflare_record" "mail-mx-2" {
-  domain   = "${var.cloudflare_zone}"
-  name     = "mail"
-  type     = "MX"
-  value    = "in2-smtp.messagingengine.com"
-  priority = 20
-}
-
-resource "cloudflare_record" "www-mx-1" {
-  domain   = "${var.cloudflare_zone}"
-  name     = "www"
-  type     = "MX"
-  value    = "in1-smtp.messagingengine.com"
-  priority = 10
-}
-
-resource "cloudflare_record" "www-mx-2" {
-  domain   = "${var.cloudflare_zone}"
-  name     = "www"
-  type     = "MX"
-  value    = "in2-smtp.messagingengine.com"
-  priority = 20
-}
-
-resource "cloudflare_record" "cloud-mx-1" {
-  domain   = "${var.cloudflare_zone}"
-  name     = "cloud"
-  type     = "MX"
-  value    = "in1-smtp.messagingengine.com"
-  priority = 10
-}
-
-resource "cloudflare_record" "cloud-mx-2" {
-  domain   = "${var.cloudflare_zone}"
-  name     = "cloud"
-  type     = "MX"
-  value    = "in2-smtp.messagingengine.com"
-  priority = 20
+resource "cloudflare_record" "spf" {
+  domain = "${var.cloudflare_zone}"
+  name   = "${var.cloudflare_zone}"
+  type   = "TXT"
+  value  = "v=spf1 include:spf.messagingengine.com ?all"
 }
 
 resource "cloudflare_record" "caldav" {
@@ -198,11 +147,4 @@ resource "cloudflare_record" "smtp" {
     "target"   = "smtp.fastmail.com"
   }
   priority = 0
-}
-
-resource "cloudflare_record" "spf" {
-  domain = "${var.cloudflare_zone}"
-  name   = "${var.cloudflare_zone}"
-  type   = "TXT"
-  value  = "v=spf1 include:spf.messagingengine.com ?all"
 }

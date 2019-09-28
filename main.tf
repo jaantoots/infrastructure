@@ -1,3 +1,9 @@
+# Github
+provider "github" {
+  version    = "~> 2.2"
+  individual = true
+}
+
 # Cloudflare for DNS
 provider "cloudflare" {
   version = "~> 1.18"

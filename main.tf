@@ -1,6 +1,7 @@
 # Github
 provider "github" {
   version    = "~> 2.2"
+  token      = "${var.github_token}"
   individual = true
 }
 

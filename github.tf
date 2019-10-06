@@ -8,6 +8,11 @@ resource "github_user_ssh_key" "falstaff" {
   key   = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN0xreG4XPAgqvyPqP58HYMGTjHKyh59XGDdOUgjVIEN"
 }
 
+resource "github_user_ssh_key" "gpd" {
+  title = "jaan@gpd"
+  key   = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPMqraBY0913sVm751oqvM6tZoIQ/dBjOAIoZmukhsjo"
+}
+
 resource "github_user_gpg_key" "rsa4096_9AE22DC9DF6496F6" {
   armored_public_key = <<EOF
 -----BEGIN PGP PUBLIC KEY BLOCK-----

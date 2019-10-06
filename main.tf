@@ -6,12 +6,14 @@ provider "github" {
 
 # Cloudflare for DNS
 provider "cloudflare" {
-  version = "~> 1.18"
+  version   = "~> 2.0"
+  api_token = "${var.cloudflare_api_token}"
 }
 
-variable "cloudflare_zone" {
-  type    = string
-  default = "jaan.xyz"
+data "cloudflare_zones" "jaan_xyz" {
+  filter {
+    name = "jaan.xyz"
+  }
 }
 
 # Linode for servers

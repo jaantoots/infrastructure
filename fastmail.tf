@@ -1,15 +1,15 @@
 resource "cloudflare_record" "mail-a1" {
-  domain = "${var.cloudflare_zone}"
-  name   = "mail"
-  type   = "A"
-  value  = "66.111.4.147"
+  zone_id = "${data.cloudflare_zones.jaan_xyz.zones[0].id}"
+  name    = "mail"
+  type    = "A"
+  value   = "66.111.4.147"
 }
 
 resource "cloudflare_record" "mail-a2" {
-  domain = "${var.cloudflare_zone}"
-  name   = "mail"
-  type   = "A"
-  value  = "66.111.4.148"
+  zone_id = "${data.cloudflare_zones.jaan_xyz.zones[0].id}"
+  name    = "mail"
+  type    = "A"
+  value   = "66.111.4.148"
 }
 
 locals {
@@ -18,7 +18,7 @@ locals {
 
 resource "cloudflare_record" "mx1" {
   for_each = toset(local.mx_names)
-  domain   = "${var.cloudflare_zone}"
+  zone_id  = "${data.cloudflare_zones.jaan_xyz.zones[0].id}"
   name     = each.value
   type     = "MX"
   value    = "in1-smtp.messagingengine.com"
@@ -27,7 +27,7 @@ resource "cloudflare_record" "mx1" {
 
 resource "cloudflare_record" "mx2" {
   for_each = toset(local.mx_names)
-  domain   = "${var.cloudflare_zone}"
+  zone_id  = "${data.cloudflare_zones.jaan_xyz.zones[0].id}"
   name     = each.value
   type     = "MX"
   value    = "in2-smtp.messagingengine.com"
@@ -35,44 +35,44 @@ resource "cloudflare_record" "mx2" {
 }
 
 resource "cloudflare_record" "fm1_domainkey" {
-  domain = "${var.cloudflare_zone}"
-  name   = "fm1._domainkey"
-  type   = "CNAME"
-  value  = "fm1.${var.cloudflare_zone}.dkim.fmhosted.com"
+  zone_id = "${data.cloudflare_zones.jaan_xyz.zones[0].id}"
+  name    = "fm1._domainkey"
+  type    = "CNAME"
+  value   = "fm1.${var.cloudflare_zone}.dkim.fmhosted.com"
 }
 
 resource "cloudflare_record" "fm2_domainkey" {
-  domain = "${var.cloudflare_zone}"
-  name   = "fm2._domainkey"
-  type   = "CNAME"
-  value  = "fm2.${var.cloudflare_zone}.dkim.fmhosted.com"
+  zone_id = "${data.cloudflare_zones.jaan_xyz.zones[0].id}"
+  name    = "fm2._domainkey"
+  type    = "CNAME"
+  value   = "fm2.${var.cloudflare_zone}.dkim.fmhosted.com"
 }
 
 resource "cloudflare_record" "fm3_domainkey" {
-  domain = "${var.cloudflare_zone}"
-  name   = "fm3._domainkey"
-  type   = "CNAME"
-  value  = "fm3.${var.cloudflare_zone}.dkim.fmhosted.com"
+  zone_id = "${data.cloudflare_zones.jaan_xyz.zones[0].id}"
+  name    = "fm3._domainkey"
+  type    = "CNAME"
+  value   = "fm3.${var.cloudflare_zone}.dkim.fmhosted.com"
 }
 
 resource "cloudflare_record" "mesmtp_domainkey" {
-  domain = "${var.cloudflare_zone}"
-  name   = "mesmtp._domainkey"
-  type   = "CNAME"
-  value  = "mesmtp.${var.cloudflare_zone}.dkim.fmhosted.com"
+  zone_id = "${data.cloudflare_zones.jaan_xyz.zones[0].id}"
+  name    = "mesmtp._domainkey"
+  type    = "CNAME"
+  value   = "mesmtp.${var.cloudflare_zone}.dkim.fmhosted.com"
 }
 
 resource "cloudflare_record" "spf" {
-  domain = "${var.cloudflare_zone}"
-  name   = "${var.cloudflare_zone}"
-  type   = "TXT"
-  value  = "v=spf1 include:spf.messagingengine.com ?all"
+  zone_id = "${data.cloudflare_zones.jaan_xyz.zones[0].id}"
+  name    = "${var.cloudflare_zone}"
+  type    = "TXT"
+  value   = "v=spf1 include:spf.messagingengine.com ?all"
 }
 
 resource "cloudflare_record" "caldav" {
-  domain = "${var.cloudflare_zone}"
-  name   = "_caldavs._tcp"
-  type   = "SRV"
+  zone_id = "${data.cloudflare_zones.jaan_xyz.zones[0].id}"
+  name    = "_caldavs._tcp"
+  type    = "SRV"
   data = {
     "service"  = "_caldavs"
     "proto"    = "_tcp"
@@ -86,9 +86,9 @@ resource "cloudflare_record" "caldav" {
 }
 
 resource "cloudflare_record" "carddav" {
-  domain = "${var.cloudflare_zone}"
-  name   = "_carddavs._tcp"
-  type   = "SRV"
+  zone_id = "${data.cloudflare_zones.jaan_xyz.zones[0].id}"
+  name    = "_carddavs._tcp"
+  type    = "SRV"
   data = {
     "service"  = "_carddavs"
     "proto"    = "_tcp"
@@ -102,9 +102,9 @@ resource "cloudflare_record" "carddav" {
 }
 
 resource "cloudflare_record" "imap" {
-  domain = "${var.cloudflare_zone}"
-  name   = "_imaps._tcp"
-  type   = "SRV"
+  zone_id = "${data.cloudflare_zones.jaan_xyz.zones[0].id}"
+  name    = "_imaps._tcp"
+  type    = "SRV"
   data = {
     "service"  = "_imaps"
     "proto"    = "_tcp"
@@ -118,9 +118,9 @@ resource "cloudflare_record" "imap" {
 }
 
 resource "cloudflare_record" "pop" {
-  domain = "${var.cloudflare_zone}"
-  name   = "_pop3s._tcp"
-  type   = "SRV"
+  zone_id = "${data.cloudflare_zones.jaan_xyz.zones[0].id}"
+  name    = "_pop3s._tcp"
+  type    = "SRV"
   data = {
     "service"  = "_pop3s"
     "proto"    = "_tcp"
@@ -134,9 +134,9 @@ resource "cloudflare_record" "pop" {
 }
 
 resource "cloudflare_record" "smtp" {
-  domain = "${var.cloudflare_zone}"
-  name   = "_submission._tcp"
-  type   = "SRV"
+  zone_id = "${data.cloudflare_zones.jaan_xyz.zones[0].id}"
+  name    = "_submission._tcp"
+  type    = "SRV"
   data = {
     "service"  = "_submission"
     "proto"    = "_tcp"

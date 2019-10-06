@@ -7,21 +7,21 @@ resource "linode_instance" "cloud" {
 }
 
 resource "cloudflare_record" "cloud" {
-  domain = "${var.cloudflare_zone}"
-  name   = "cloud"
-  type   = "A"
-  value  = "${linode_instance.cloud.ip_address}"
+  zone_id = "${data.cloudflare_zones.jaan_xyz.zones[0].id}"
+  name    = "cloud"
+  type    = "A"
+  value   = "${linode_instance.cloud.ip_address}"
 }
 
 resource "cloudflare_record" "cloud6" {
-  domain = "${var.cloudflare_zone}"
-  name   = "cloud"
-  type   = "AAAA"
-  value  = split("/", "${linode_instance.cloud.ipv6}")[0]
+  zone_id = "${data.cloudflare_zones.jaan_xyz.zones[0].id}"
+  name    = "cloud"
+  type    = "AAAA"
+  value   = split("/", "${linode_instance.cloud.ipv6}")[0]
 }
 
 resource "cloudflare_record" "www" {
-  domain  = "${var.cloudflare_zone}"
+  zone_id = "${data.cloudflare_zones.jaan_xyz.zones[0].id}"
   name    = "www"
   type    = "CNAME"
   value   = "web.messagingengine.com"
@@ -29,7 +29,7 @@ resource "cloudflare_record" "www" {
 }
 
 resource "cloudflare_record" "root" {
-  domain  = "${var.cloudflare_zone}"
+  zone_id = "${data.cloudflare_zones.jaan_xyz.zones[0].id}"
   name    = "${var.cloudflare_zone}"
   type    = "CNAME"
   value   = "www.${var.cloudflare_zone}"

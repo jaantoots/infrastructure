@@ -13,7 +13,7 @@ resource "cloudflare_record" "mail-a2" {
 }
 
 locals {
-  mx_names = ["*", "${var.zone.zone}", "mail", "www", "cloud"]
+  mx_names = concat(["*", "${var.zone.zone}", "mail"], var.extra_mx_names)
 }
 
 resource "cloudflare_record" "mx1" {

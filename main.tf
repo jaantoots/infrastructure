@@ -16,8 +16,9 @@ resource "cloudflare_zone" "jaan_xyz" {
 }
 
 module "fastmail_jaan_xyz" {
-  source = "./fastmail"
-  zone   = cloudflare_zone.jaan_xyz
+  source         = "./fastmail"
+  zone           = cloudflare_zone.jaan_xyz
+  extra_mx_names = ["www", "cloud"]
 }
 
 resource "cloudflare_zone" "jstd_io" {

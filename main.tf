@@ -25,6 +25,11 @@ resource "cloudflare_zone" "jstd_io" {
   zone = "jstd.io"
 }
 
+module "fastmail_jstd_io" {
+  source = "./fastmail"
+  zone   = cloudflare_zone.jstd_io
+}
+
 resource "cloudflare_zone" "jstd_eu" {
   zone = "jstd.eu"
 }

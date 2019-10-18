@@ -15,6 +15,11 @@ resource "cloudflare_zone" "jaan_xyz" {
   zone = "jaan.xyz"
 }
 
+module "fastmail_jaan_xyz" {
+  source = "./fastmail"
+  zone   = cloudflare_zone.jaan_xyz
+}
+
 # Linode for servers
 provider "linode" {
   version = "~> 1.8"

@@ -20,6 +20,14 @@ module "fastmail_jaan_xyz" {
   zone   = cloudflare_zone.jaan_xyz
 }
 
+resource "cloudflare_zone" "jstd_io" {
+  zone = "jstd.io"
+}
+
+resource "cloudflare_zone" "jstd_eu" {
+  zone = "jstd.eu"
+}
+
 # Linode for servers
 provider "linode" {
   version = "~> 1.8"

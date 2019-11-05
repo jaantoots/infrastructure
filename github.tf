@@ -1,16 +1,7 @@
-resource "github_user_ssh_key" "caracal" {
-  title = "jaan@caracal"
-  key   = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPMTSn9LSly4Gic5/s9JqYfvRTi+ZkwoZd/YTWaxmPA7"
-}
-
-resource "github_user_ssh_key" "falstaff" {
-  title = "jaan@falstaff"
-  key   = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN0xreG4XPAgqvyPqP58HYMGTjHKyh59XGDdOUgjVIEN"
-}
-
-resource "github_user_ssh_key" "gpd" {
-  title = "jaan@gpd"
-  key   = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPMqraBY0913sVm751oqvM6tZoIQ/dBjOAIoZmukhsjo"
+resource "github_user_ssh_key" "keys" {
+  for_each = var.ssh_keys
+  title    = "${split(" ", each.value)[2]}"
+  key      = "${join(" ", slice(split(" ", each.value), 0, 2))}"
 }
 
 resource "github_user_gpg_key" "rsa4096_9AE22DC9DF6496F6" {

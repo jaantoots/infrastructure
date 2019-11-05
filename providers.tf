@@ -16,3 +16,9 @@ provider "linode" {
   version = "~> 1.8"
   token   = "${var.linode_token}"
 }
+
+# DigitalOcean for servers
+provider "digitalocean" {
+  version = "~> 1.10"
+  token   = "${var.do_token}"
+}

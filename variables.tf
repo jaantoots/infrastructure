@@ -10,6 +10,10 @@ variable "linode_token" {
   description = "Linode APIv4 token"
 }
 
+variable "do_token" {
+  description = "DigitalOcean personal access token"
+}
+
 variable "ssh_keys" {
   description = "SSH public keys"
   default = {

@@ -37,6 +37,7 @@ resource "cloudflare_zone" "jstd_eu" {
 # Linode for servers
 provider "linode" {
   version = "~> 1.8"
+  token   = "${var.linode_token}"
 }
 
 resource "linode_sshkey" "caracal" {

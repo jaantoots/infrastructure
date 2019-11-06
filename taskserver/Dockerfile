@@ -1,8 +1,7 @@
-FROM alpine:latest
+FROM alpine:3.10.3
 
 # Install taskserver
-RUN apk -U --no-progress upgrade && \
-    apk -U --no-progress add taskd taskd-pki
+RUN apk --no-progress --no-cache add taskd taskd-pki
 
 # Set configuration
 ARG TASKDDATA

@@ -101,7 +101,7 @@ ExecStart=/usr/bin/rkt run --insecure-options=image \
     --set-env=TASKD_COUNTRY=EE \
     --set-env=TASKD_STATE=Harju \
     --set-env=TASKD_LOCALITY=Tallinn \
-    docker://docker.pkg.github.com/jaantoots/infrastructure/taskserver:latest
+    docker://docker.pkg.github.com/jaantoots/infrastructure/taskserver:1.0.0
 KillMode=mixed
 Restart=always
 

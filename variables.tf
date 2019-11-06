@@ -14,6 +14,10 @@ variable "do_token" {
   description = "DigitalOcean personal access token"
 }
 
+variable "github_pkg_token" {
+  description = "GitHub token for package registry acccess on deployments"
+}
+
 variable "ssh_keys" {
   description = "SSH public keys"
   default = {

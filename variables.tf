@@ -6,10 +6,6 @@ variable "github_token" {
   description = "GitHub personal access token"
 }
 
-variable "linode_token" {
-  description = "Linode APIv4 token"
-}
-
 variable "do_token" {
   description = "DigitalOcean personal access token"
 }

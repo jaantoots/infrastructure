@@ -11,12 +11,6 @@ provider "cloudflare" {
   api_token = "${var.cloudflare_api_token}"
 }
 
-# Linode for servers
-provider "linode" {
-  version = "~> 1.8"
-  token   = "${var.linode_token}"
-}
-
 # DigitalOcean for servers
 provider "digitalocean" {
   version = "~> 1.10"

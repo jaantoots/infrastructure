@@ -24,7 +24,7 @@ resource "digitalocean_volume_attachment" "cloud" {
 
 data "ignition_config" "cloud" {
   filesystems = [
-    "${data.ignition_filesystem.cloud_data.id}",
+    "${data.ignition_filesystem.data.id}",
   ]
   directories = [
     "${data.ignition_directory.authorized_keys.id}",
@@ -39,6 +39,7 @@ data "ignition_config" "cloud" {
     "${data.ignition_file.gps_auth.id}",
   ]
   systemd = [
+    "${data.ignition_systemd_unit.data_resize.id}",
     "${data.ignition_systemd_unit.data_mount.id}",
     "${data.ignition_systemd_unit.pass.id}",
     "${data.ignition_systemd_unit.taskserver.id}",
@@ -49,12 +50,45 @@ data "ignition_config" "cloud" {
   ]
 }
 
-data "ignition_filesystem" "cloud_data" {
+data "ignition_filesystem" "data" {
   name = "data"
   mount {
     device = "/dev/disk/by-label/data"
     format = "ext4"
   }
+}
+
+data "ignition_systemd_unit" "data_resize" {
+  name    = "data-resize.service"
+  content = <<EOF
+[Unit]
+Description=Resize data volume filesystem to fill partition
+DefaultDependencies=no
+Before=data.mount
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/e2fsck -pf /dev/disk/by-label/data
+ExecStart=/usr/sbin/resize2fs /dev/disk/by-label/data
+
+[Install]
+WantedBy=local-fs.target
+EOF
+}
+
+data "ignition_systemd_unit" "data_mount" {
+  name    = "data.mount"
+  content = <<EOF
+[Unit]
+Description=Persistent data (/data)
+
+[Mount]
+What=/dev/disk/by-label/data
+Where=/data
+
+[Install]
+WantedBy=local-fs.target
+EOF
 }
 
 data "ignition_file" "sshd_config" {
@@ -163,21 +197,6 @@ data "ignition_directory" "data_taskd" {
   filesystem = "data"
   path       = "/taskd"
   mode       = 1023
-}
-
-data "ignition_systemd_unit" "data_mount" {
-  name    = "data.mount"
-  content = <<EOF
-[Unit]
-Description=Persistent data (/data)
-
-[Mount]
-What=/dev/disk/by-label/data
-Where=/data
-
-[Install]
-WantedBy=local-fs.target
-EOF
 }
 
 data "ignition_file" "docker_auth" {

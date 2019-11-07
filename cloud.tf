@@ -181,19 +181,3 @@ resource "cloudflare_record" "cloud6" {
   type    = "AAAA"
   value   = "${digitalocean_droplet.cloud.ipv6_address}"
 }
-
-resource "cloudflare_record" "www" {
-  zone_id = "${cloudflare_zone.jaan_xyz.id}"
-  name    = "www"
-  type    = "CNAME"
-  value   = "web.messagingengine.com"
-  proxied = true
-}
-
-resource "cloudflare_record" "root" {
-  zone_id = "${cloudflare_zone.jaan_xyz.id}"
-  name    = "${cloudflare_zone.jaan_xyz.zone}"
-  type    = "CNAME"
-  value   = "www.${cloudflare_zone.jaan_xyz.zone}"
-  proxied = true
-}

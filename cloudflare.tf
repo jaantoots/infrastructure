@@ -1,3 +1,20 @@
+resource "cloudflare_zone" "jaantoots_org" {
+  zone = "jaantoots.org"
+}
+
+module "fastmail_jaantoots_org" {
+  source         = "./fastmail"
+  zone           = cloudflare_zone.jaantoots_org
+  extra_mx_names = ["www", "cloud"]
+}
+
+module "mailgun_jaantoots_org" {
+  source    = "./mailgun"
+  zone      = cloudflare_zone.jaantoots_org
+  selector  = "krs"
+  domainkey = "k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDhQNpN9thb0zIz9JCA+QzM2YFRnPYE+3Tv6Q33/UwBKbTDbevhkMJ7e1QBjAWr6AXOO/VpYcaTpJJSLA2xdNzTyhp8kWyVnjcsUc0ifYXoXPEziY1p4qTDFPLrusfmAkPQzSRMdlFWhN00Lm2KKCrRjZ+a60YiUYDSUmTMiohbjQIDAQAB"
+}
+
 resource "cloudflare_zone" "jaan_xyz" {
   zone = "jaan.xyz"
 }

@@ -2,6 +2,13 @@ resource "cloudflare_zone" "jaantoots_org" {
   zone = "jaantoots.org"
 }
 
+resource "cloudflare_record" "auganite" {
+  zone_id = "${cloudflare_zone.jaantoots_org.id}"
+  name    = "auganite"
+  type    = "CNAME"
+  value   = "auganite-jaantoots-org.nsupdate.info"
+}
+
 module "fastmail_jaantoots_org" {
   source         = "./fastmail"
   zone           = cloudflare_zone.jaantoots_org

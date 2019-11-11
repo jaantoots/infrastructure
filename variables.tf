@@ -1,5 +1,9 @@
+variable "acme_email" {
+  description = "Email address used for ACME with Let's Encrypt"
+}
+
 variable "cloudflare_api_token" {
-  description = "Cloudflare API toker"
+  description = "Cloudflare API token"
 }
 
 variable "github_token" {

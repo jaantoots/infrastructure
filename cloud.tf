@@ -31,18 +31,22 @@ data "ignition_config" "cloud" {
     "${data.ignition_directory.data_pass.id}",
     "${data.ignition_directory.data_gps.id}",
     "${data.ignition_directory.data_taskd.id}",
+    "${data.ignition_directory.data_caddy.id}",
+    "${data.ignition_directory.data_archlinux.id}",
   ]
   files = [
     "${data.ignition_file.docker_auth.id}",
     "${data.ignition_file.sshd_config.id}",
     "${data.ignition_file.pass_auth.id}",
     "${data.ignition_file.gps_auth.id}",
+    "${data.ignition_file.caddyfile.id}",
   ]
   systemd = [
     "${data.ignition_systemd_unit.data_resize.id}",
     "${data.ignition_systemd_unit.data_mount.id}",
     "${data.ignition_systemd_unit.pass.id}",
     "${data.ignition_systemd_unit.taskserver.id}",
+    "${data.ignition_systemd_unit.caddy.id}",
   ]
   users = [
     "${data.ignition_user.pass.id}",
@@ -242,6 +246,60 @@ WantedBy=multi-user.target
 EOF
 }
 
+data "ignition_directory" "data_caddy" {
+  filesystem = "data"
+  path       = "/caddy"
+  mode       = 1023
+}
+
+data "ignition_file" "caddyfile" {
+  filesystem = "data"
+  path       = "/caddy/Caddyfile"
+  mode       = 420
+  content {
+    content = <<EOF
+http://archlinux.${cloudflare_zone.jaan_xyz.zone}, https://archlinux.${cloudflare_zone.jaan_xyz.zone} {
+    errors
+    log
+    browse
+    root /srv/http
+}
+EOF
+  }
+}
+
+data "ignition_directory" "data_archlinux" {
+  filesystem = "data"
+  path       = "/archlinux"
+  mode       = 493
+  uid        = 500
+  gid        = 500
+}
+
+data "ignition_systemd_unit" "caddy" {
+  name    = "caddy.service"
+  content = <<EOF
+[Unit]
+Description=Caddy server
+
+[Service]
+Slice=machine.slice
+LimitNOFILE=8192:524288
+ExecStart=/usr/bin/rkt run --insecure-options=image \
+    --volume=volume-var-lib-caddy,kind=host,source=/data/caddy \
+    --volume=volume-srv-http,kind=host,readOnly=true,source=/data/archlinux \
+    --port=8080-tcp:80 \
+    --port=8443-tcp:443 \
+    --dns=1.1.1.1 \
+    docker://docker.pkg.github.com/jaantoots/infrastructure/caddy:latest -- -agree -email ${var.acme_email}
+KillMode=mixed
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+}
+
 resource "digitalocean_firewall" "cloud" {
   name        = "cloud"
   droplet_ids = [digitalocean_droplet.cloud.id]
@@ -296,6 +354,13 @@ resource "digitalocean_firewall" "cloud" {
 resource "cloudflare_record" "task" {
   zone_id = "${cloudflare_zone.jaan_xyz.id}"
   name    = "task"
+  type    = "CNAME"
+  value   = "${cloudflare_record.cloud.hostname}"
+}
+
+resource "cloudflare_record" "archlinux" {
+  zone_id = "${cloudflare_zone.jaan_xyz.id}"
+  name    = "archlinux"
   type    = "CNAME"
   value   = "${cloudflare_record.cloud.hostname}"
 }

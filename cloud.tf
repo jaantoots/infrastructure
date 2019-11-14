@@ -291,7 +291,7 @@ ExecStart=/usr/bin/rkt run --insecure-options=image \
     --port=8080-tcp:80 \
     --port=8443-tcp:443 \
     --dns=1.1.1.1 \
-    docker://docker.pkg.github.com/jaantoots/infrastructure/caddy:1.0.0 -- -agree -email ${var.acme_email}
+    docker://docker.pkg.github.com/jaantoots/infrastructure/caddy:1.0.3 -- -agree -email ${var.acme_email}
 KillMode=mixed
 Restart=always
 

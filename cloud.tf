@@ -32,7 +32,9 @@ data "ignition_config" "cloud" {
     "${data.ignition_directory.data_gps.id}",
     "${data.ignition_directory.data_taskd.id}",
     "${data.ignition_directory.data_caddy.id}",
-    "${data.ignition_directory.data_archlinux.id}",
+    "${data.ignition_directory.data_http.id}",
+    "${data.ignition_directory.data_http_archlinux.id}",
+    "${data.ignition_directory.data_http_web.id}",
   ]
   files = [
     "${data.ignition_file.docker_auth.id}",
@@ -262,15 +264,38 @@ http://archlinux.${cloudflare_zone.jaan_xyz.zone}, https://archlinux.${cloudflar
     errors
     log
     browse
-    root /srv/http
+    root /srv/http/archlinux
+}
+
+https://web.${cloudflare_zone.jaan_xyz.zone} {
+    errors
+    log
+    markdown
+    root /srv/http/web
 }
 EOF
   }
 }
 
-data "ignition_directory" "data_archlinux" {
+data "ignition_directory" "data_http" {
   filesystem = "data"
-  path       = "/archlinux"
+  path       = "/http"
+  mode       = 493
+  uid        = 500
+  gid        = 500
+}
+
+data "ignition_directory" "data_http_archlinux" {
+  filesystem = "data"
+  path       = "/http/archlinux"
+  mode       = 493
+  uid        = 500
+  gid        = 500
+}
+
+data "ignition_directory" "data_http_web" {
+  filesystem = "data"
+  path       = "/http/web"
   mode       = 493
   uid        = 500
   gid        = 500
@@ -287,7 +312,7 @@ Slice=machine.slice
 LimitNOFILE=8192:524288
 ExecStart=/usr/bin/rkt run --insecure-options=image \
     --volume=volume-var-lib-caddy,kind=host,source=/data/caddy \
-    --volume=volume-srv-http,kind=host,readOnly=true,source=/data/archlinux \
+    --volume=volume-srv-http,kind=host,readOnly=true,source=/data/http \
     --port=8080-tcp:80 \
     --port=8443-tcp:443 \
     --dns=1.1.1.1 \
@@ -361,6 +386,13 @@ resource "cloudflare_record" "task" {
 resource "cloudflare_record" "archlinux" {
   zone_id = "${cloudflare_zone.jaan_xyz.id}"
   name    = "archlinux"
+  type    = "CNAME"
+  value   = "${cloudflare_record.cloud.hostname}"
+}
+
+resource "cloudflare_record" "web" {
+  zone_id = "${cloudflare_zone.jaan_xyz.id}"
+  name    = "web"
   type    = "CNAME"
   value   = "${cloudflare_record.cloud.hostname}"
 }

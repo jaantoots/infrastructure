@@ -1,7 +1,7 @@
 resource "github_user_ssh_key" "keys" {
   for_each = var.ssh_keys
-  title    = "${split(" ", each.value)[2]}"
-  key      = "${join(" ", slice(split(" ", each.value), 0, 2))}"
+  title    = split(" ", each.value)[2]
+  key      = join(" ", slice(split(" ", each.value), 0, 2))
 }
 
 resource "github_user_gpg_key" "rsa4096_9AE22DC9DF6496F6" {

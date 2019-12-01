@@ -3,7 +3,7 @@ resource "cloudflare_zone" "jaantoots_org" {
 }
 
 resource "cloudflare_record" "auganite" {
-  zone_id = "${cloudflare_zone.jaantoots_org.id}"
+  zone_id = cloudflare_zone.jaantoots_org.id
   name    = "auganite"
   type    = "CNAME"
   value   = "auganite-jaantoots-org.nsupdate.info"
@@ -40,7 +40,7 @@ module "mailgun_jaan_xyz" {
 }
 
 resource "cloudflare_record" "cdn" {
-  zone_id = "${cloudflare_zone.jaan_xyz.id}"
+  zone_id = cloudflare_zone.jaan_xyz.id
   name    = "cdn"
   type    = "CNAME"
   value   = "f002.backblazeb2.com"
@@ -48,7 +48,7 @@ resource "cloudflare_record" "cdn" {
 }
 
 resource "cloudflare_page_rule" "allow_bucket" {
-  zone_id  = "${cloudflare_zone.jaan_xyz.id}"
+  zone_id  = cloudflare_zone.jaan_xyz.id
   target   = "https://${cloudflare_record.cdn.hostname}/file/jaan-public/*"
   priority = 2
 
@@ -58,7 +58,7 @@ resource "cloudflare_page_rule" "allow_bucket" {
 }
 
 resource "cloudflare_page_rule" "disallow_others" {
-  zone_id  = "${cloudflare_zone.jaan_xyz.id}"
+  zone_id  = cloudflare_zone.jaan_xyz.id
   target   = "https://${cloudflare_record.cdn.hostname}/file/*/*"
   priority = 1
 

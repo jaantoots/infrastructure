@@ -5,7 +5,7 @@ resource "digitalocean_droplet" "cloud" {
   size      = "s-1vcpu-1gb"
   ipv6      = true
   ssh_keys  = [for key in digitalocean_ssh_key.keys : key.fingerprint]
-  user_data = "${data.ignition_config.cloud.rendered}"
+  user_data = data.ignition_config.cloud.rendered
 }
 
 resource "digitalocean_volume" "cloud" {
@@ -18,41 +18,41 @@ resource "digitalocean_volume" "cloud" {
 }
 
 resource "digitalocean_volume_attachment" "cloud" {
-  droplet_id = "${digitalocean_droplet.cloud.id}"
-  volume_id  = "${digitalocean_volume.cloud.id}"
+  droplet_id = digitalocean_droplet.cloud.id
+  volume_id  = digitalocean_volume.cloud.id
 }
 
 data "ignition_config" "cloud" {
   filesystems = [
-    "${data.ignition_filesystem.data.id}",
+    data.ignition_filesystem.data.id,
   ]
   directories = [
-    "${data.ignition_directory.authorized_keys.id}",
-    "${data.ignition_directory.data_pass.id}",
-    "${data.ignition_directory.data_gps.id}",
-    "${data.ignition_directory.data_taskd.id}",
-    "${data.ignition_directory.data_caddy.id}",
-    "${data.ignition_directory.data_http.id}",
-    "${data.ignition_directory.data_http_archlinux.id}",
-    "${data.ignition_directory.data_http_web.id}",
+    data.ignition_directory.authorized_keys.id,
+    data.ignition_directory.data_pass.id,
+    data.ignition_directory.data_gps.id,
+    data.ignition_directory.data_taskd.id,
+    data.ignition_directory.data_caddy.id,
+    data.ignition_directory.data_http.id,
+    data.ignition_directory.data_http_archlinux.id,
+    data.ignition_directory.data_http_web.id,
   ]
   files = [
-    "${data.ignition_file.docker_auth.id}",
-    "${data.ignition_file.sshd_config.id}",
-    "${data.ignition_file.pass_auth.id}",
-    "${data.ignition_file.gps_auth.id}",
-    "${data.ignition_file.caddyfile.id}",
+    data.ignition_file.docker_auth.id,
+    data.ignition_file.sshd_config.id,
+    data.ignition_file.pass_auth.id,
+    data.ignition_file.gps_auth.id,
+    data.ignition_file.caddyfile.id,
   ]
   systemd = [
-    "${data.ignition_systemd_unit.data_resize.id}",
-    "${data.ignition_systemd_unit.data_mount.id}",
-    "${data.ignition_systemd_unit.pass.id}",
-    "${data.ignition_systemd_unit.taskserver.id}",
-    "${data.ignition_systemd_unit.caddy.id}",
+    data.ignition_systemd_unit.data_resize.id,
+    data.ignition_systemd_unit.data_mount.id,
+    data.ignition_systemd_unit.pass.id,
+    data.ignition_systemd_unit.taskserver.id,
+    data.ignition_systemd_unit.caddy.id,
   ]
   users = [
-    "${data.ignition_user.pass.id}",
-    "${data.ignition_user.gps.id}",
+    data.ignition_user.pass.id,
+    data.ignition_user.gps.id,
   ]
 }
 
@@ -377,36 +377,36 @@ resource "digitalocean_firewall" "cloud" {
 }
 
 resource "cloudflare_record" "task" {
-  zone_id = "${cloudflare_zone.jaan_xyz.id}"
+  zone_id = cloudflare_zone.jaan_xyz.id
   name    = "task"
   type    = "CNAME"
-  value   = "${cloudflare_record.cloud.hostname}"
+  value   = cloudflare_record.cloud.hostname
 }
 
 resource "cloudflare_record" "archlinux" {
-  zone_id = "${cloudflare_zone.jaan_xyz.id}"
+  zone_id = cloudflare_zone.jaan_xyz.id
   name    = "archlinux"
   type    = "CNAME"
-  value   = "${cloudflare_record.cloud.hostname}"
+  value   = cloudflare_record.cloud.hostname
 }
 
 resource "cloudflare_record" "web" {
-  zone_id = "${cloudflare_zone.jaan_xyz.id}"
+  zone_id = cloudflare_zone.jaan_xyz.id
   name    = "web"
   type    = "CNAME"
-  value   = "${cloudflare_record.cloud.hostname}"
+  value   = cloudflare_record.cloud.hostname
 }
 
 resource "cloudflare_record" "cloud" {
-  zone_id = "${cloudflare_zone.jaan_xyz.id}"
+  zone_id = cloudflare_zone.jaan_xyz.id
   name    = "cloud"
   type    = "A"
-  value   = "${digitalocean_droplet.cloud.ipv4_address}"
+  value   = digitalocean_droplet.cloud.ipv4_address
 }
 
 resource "cloudflare_record" "cloud6" {
-  zone_id = "${cloudflare_zone.jaan_xyz.id}"
+  zone_id = cloudflare_zone.jaan_xyz.id
   name    = "cloud"
   type    = "AAAA"
-  value   = "${digitalocean_droplet.cloud.ipv6_address}"
+  value   = digitalocean_droplet.cloud.ipv6_address
 }

@@ -1,8 +1,8 @@
-FROM alpine:3.10.3 AS build
-ARG VERSION=1.0.3
+FROM golang:1.13.4-alpine3.10 AS build
+ARG VERSION=1.0.4
 
 # Install dependencies and prepare
-RUN apk --no-progress --no-cache add go musl-dev git
+RUN apk --no-progress --no-cache add musl-dev git
 RUN adduser -D -h /build -g build build
 USER build
 
@@ -32,4 +32,4 @@ USER caddy
 WORKDIR /var/lib/caddy
 ENV CADDYPATH /var/lib/caddy/caddy
 VOLUME /var/lib/caddy /srv/http
-CMD ["caddy", "-http-port", "8080", "-https-port", "8443"]
+ENTRYPOINT ["caddy", "-http-port", "8080", "-https-port", "8443"]

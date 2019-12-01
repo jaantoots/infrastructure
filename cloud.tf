@@ -22,6 +22,74 @@ resource "digitalocean_volume_attachment" "cloud" {
   volume_id  = digitalocean_volume.cloud.id
 }
 
+resource "digitalocean_floating_ip" "cloud" {
+  region     = digitalocean_droplet.cloud.region
+}
+
+resource "digitalocean_floating_ip_assignment" "cloud" {
+  ip_address = digitalocean_floating_ip.cloud.ip_address
+  droplet_id = digitalocean_droplet.cloud.id
+}
+
+resource "cloudflare_record" "cloud" {
+  zone_id = cloudflare_zone.jaan_xyz.id
+  name    = "cloud"
+  type    = "A"
+  value   = digitalocean_floating_ip.cloud.ip_address
+}
+
+resource "cloudflare_record" "cloud6" {
+  zone_id = cloudflare_zone.jaan_xyz.id
+  name    = "cloud"
+  type    = "AAAA"
+  value   = digitalocean_droplet.cloud.ipv6_address
+}
+
+resource "digitalocean_firewall" "cloud" {
+  name        = "cloud"
+  droplet_ids = [digitalocean_droplet.cloud.id]
+
+  inbound_rule {
+    protocol         = "tcp"
+    port_range       = "22"
+    source_addresses = ["0.0.0.0/0", "::/0"]
+  }
+
+  inbound_rule {
+    protocol         = "tcp"
+    port_range       = "80"
+    source_addresses = ["0.0.0.0/0", "::/0"]
+  }
+
+  inbound_rule {
+    protocol         = "tcp"
+    port_range       = "443"
+    source_addresses = ["0.0.0.0/0", "::/0"]
+  }
+
+  inbound_rule {
+    protocol         = "icmp"
+    source_addresses = ["0.0.0.0/0", "::/0"]
+  }
+
+  outbound_rule {
+    protocol              = "tcp"
+    port_range            = "1-65535"
+    destination_addresses = ["0.0.0.0/0", "::/0"]
+  }
+
+  outbound_rule {
+    protocol              = "udp"
+    port_range            = "1-65535"
+    destination_addresses = ["0.0.0.0/0", "::/0"]
+  }
+
+  outbound_rule {
+    protocol              = "icmp"
+    destination_addresses = ["0.0.0.0/0", "::/0"]
+  }
+}
+
 data "ignition_config" "cloud" {
   filesystems = [
     data.ignition_filesystem.data.id,
@@ -30,11 +98,8 @@ data "ignition_config" "cloud" {
     data.ignition_directory.authorized_keys.id,
     data.ignition_directory.data_pass.id,
     data.ignition_directory.data_gps.id,
-    data.ignition_directory.data_taskd.id,
     data.ignition_directory.data_caddy.id,
     data.ignition_directory.data_http.id,
-    data.ignition_directory.data_http_archlinux.id,
-    data.ignition_directory.data_http_web.id,
   ]
   files = [
     data.ignition_file.docker_auth.id,
@@ -47,7 +112,6 @@ data "ignition_config" "cloud" {
     data.ignition_systemd_unit.data_resize.id,
     data.ignition_systemd_unit.data_mount.id,
     data.ignition_systemd_unit.pass.id,
-    data.ignition_systemd_unit.taskserver.id,
     data.ignition_systemd_unit.caddy.id,
   ]
   users = [
@@ -97,6 +161,12 @@ WantedBy=local-fs.target
 EOF
 }
 
+data "ignition_directory" "authorized_keys" {
+  filesystem = "root"
+  path       = "/etc/ssh/authorized_keys"
+  mode       = 493
+}
+
 data "ignition_file" "sshd_config" {
   filesystem = "root"
   path       = "/etc/ssh/sshd_config"
@@ -119,10 +189,11 @@ EOF
   }
 }
 
-data "ignition_directory" "authorized_keys" {
-  filesystem = "root"
-  path       = "/etc/ssh/authorized_keys"
+data "ignition_directory" "data_pass" {
+  filesystem = "data"
+  path       = "/pass"
   mode       = 493
+  uid        = data.ignition_user.pass.uid
 }
 
 data "ignition_user" "pass" {
@@ -147,13 +218,6 @@ EOF
   }
 }
 
-data "ignition_directory" "data_pass" {
-  filesystem = "data"
-  path       = "/pass"
-  mode       = 493
-  uid        = data.ignition_user.pass.uid
-}
-
 data "ignition_systemd_unit" "pass" {
   name    = "password-store.service"
   content = <<EOF
@@ -169,6 +233,13 @@ ExecStart=/usr/bin/git init --bare ${data.ignition_user.pass.home_dir}/password-
 [Install]
 WantedBy=multi-user.target
 EOF
+}
+
+data "ignition_directory" "data_gps" {
+  filesystem = "data"
+  path       = "/gps"
+  mode       = 493
+  uid        = data.ignition_user.gps.uid
 }
 
 data "ignition_user" "gps" {
@@ -192,19 +263,6 @@ EOF
   }
 }
 
-data "ignition_directory" "data_gps" {
-  filesystem = "data"
-  path       = "/gps"
-  mode       = 493
-  uid        = data.ignition_user.gps.uid
-}
-
-data "ignition_directory" "data_taskd" {
-  filesystem = "data"
-  path       = "/taskd"
-  mode       = 1023
-}
-
 data "ignition_file" "docker_auth" {
   filesystem = "root"
   path       = "/etc/rkt/auth.d/docker.json"
@@ -221,192 +279,4 @@ data "ignition_file" "docker_auth" {
 }
 EOF
   }
-}
-
-data "ignition_systemd_unit" "taskserver" {
-  name    = "taskserver.service"
-  content = <<EOF
-[Unit]
-Description=taskserver
-
-[Service]
-Slice=machine.slice
-ExecStart=/usr/bin/rkt run --insecure-options=image \
-    --volume=volume-var-lib-taskd,kind=host,source=/data/taskd \
-    --port=53589-tcp:53589 \
-    --set-env=TASKD_ORGANIZATION=jxyz \
-    --set-env=TASKD_CN=task.${cloudflare_zone.jaan_xyz.zone} \
-    --set-env=TASKD_COUNTRY=EE \
-    --set-env=TASKD_STATE=Harju \
-    --set-env=TASKD_LOCALITY=Tallinn \
-    docker://docker.pkg.github.com/jaantoots/infrastructure/taskserver:1.0.0
-KillMode=mixed
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-EOF
-}
-
-data "ignition_directory" "data_caddy" {
-  filesystem = "data"
-  path       = "/caddy"
-  mode       = 1023
-}
-
-data "ignition_file" "caddyfile" {
-  filesystem = "data"
-  path       = "/caddy/Caddyfile"
-  mode       = 420
-  content {
-    content = <<EOF
-http://archlinux.${cloudflare_zone.jaan_xyz.zone}, https://archlinux.${cloudflare_zone.jaan_xyz.zone} {
-    errors
-    log
-    browse
-    root /srv/http/archlinux
-}
-
-https://web.${cloudflare_zone.jaan_xyz.zone} {
-    errors
-    log
-    markdown
-    root /srv/http/web
-}
-EOF
-  }
-}
-
-data "ignition_directory" "data_http" {
-  filesystem = "data"
-  path       = "/http"
-  mode       = 493
-  uid        = 500
-  gid        = 500
-}
-
-data "ignition_directory" "data_http_archlinux" {
-  filesystem = "data"
-  path       = "/http/archlinux"
-  mode       = 493
-  uid        = 500
-  gid        = 500
-}
-
-data "ignition_directory" "data_http_web" {
-  filesystem = "data"
-  path       = "/http/web"
-  mode       = 493
-  uid        = 500
-  gid        = 500
-}
-
-data "ignition_systemd_unit" "caddy" {
-  name    = "caddy.service"
-  content = <<EOF
-[Unit]
-Description=Caddy server
-
-[Service]
-Slice=machine.slice
-LimitNOFILE=8192:524288
-ExecStart=/usr/bin/rkt run --insecure-options=image \
-    --volume=volume-var-lib-caddy,kind=host,source=/data/caddy \
-    --volume=volume-srv-http,kind=host,readOnly=true,source=/data/http \
-    --port=8080-tcp:80 \
-    --port=8443-tcp:443 \
-    --dns=1.1.1.1 \
-    docker://docker.pkg.github.com/jaantoots/infrastructure/caddy:1.0.3 -- -agree -email ${var.acme_email}
-KillMode=mixed
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-EOF
-}
-
-resource "digitalocean_firewall" "cloud" {
-  name        = "cloud"
-  droplet_ids = [digitalocean_droplet.cloud.id]
-
-  inbound_rule {
-    protocol         = "tcp"
-    port_range       = "22"
-    source_addresses = ["0.0.0.0/0", "::/0"]
-  }
-
-  inbound_rule {
-    protocol         = "tcp"
-    port_range       = "80"
-    source_addresses = ["0.0.0.0/0", "::/0"]
-  }
-
-  inbound_rule {
-    protocol         = "tcp"
-    port_range       = "443"
-    source_addresses = ["0.0.0.0/0", "::/0"]
-  }
-
-  inbound_rule {
-    protocol         = "tcp"
-    port_range       = "53589"
-    source_addresses = ["0.0.0.0/0", "::/0"]
-  }
-
-  inbound_rule {
-    protocol         = "icmp"
-    source_addresses = ["0.0.0.0/0", "::/0"]
-  }
-
-  outbound_rule {
-    protocol              = "tcp"
-    port_range            = "1-65535"
-    destination_addresses = ["0.0.0.0/0", "::/0"]
-  }
-
-  outbound_rule {
-    protocol              = "udp"
-    port_range            = "1-65535"
-    destination_addresses = ["0.0.0.0/0", "::/0"]
-  }
-
-  outbound_rule {
-    protocol              = "icmp"
-    destination_addresses = ["0.0.0.0/0", "::/0"]
-  }
-}
-
-resource "cloudflare_record" "task" {
-  zone_id = cloudflare_zone.jaan_xyz.id
-  name    = "task"
-  type    = "CNAME"
-  value   = cloudflare_record.cloud.hostname
-}
-
-resource "cloudflare_record" "archlinux" {
-  zone_id = cloudflare_zone.jaan_xyz.id
-  name    = "archlinux"
-  type    = "CNAME"
-  value   = cloudflare_record.cloud.hostname
-}
-
-resource "cloudflare_record" "web" {
-  zone_id = cloudflare_zone.jaan_xyz.id
-  name    = "web"
-  type    = "CNAME"
-  value   = cloudflare_record.cloud.hostname
-}
-
-resource "cloudflare_record" "cloud" {
-  zone_id = cloudflare_zone.jaan_xyz.id
-  name    = "cloud"
-  type    = "A"
-  value   = digitalocean_droplet.cloud.ipv4_address
-}
-
-resource "cloudflare_record" "cloud6" {
-  zone_id = cloudflare_zone.jaan_xyz.id
-  name    = "cloud"
-  type    = "AAAA"
-  value   = digitalocean_droplet.cloud.ipv6_address
 }

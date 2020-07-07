@@ -1,3 +1,36 @@
+resource "aws_security_group" "cloud" {
+  name        = "cloud"
+  description = "Cloud security group"
+}
+
+resource "aws_security_group_rule" "cloud_allow_ssh" {
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.cloud.id
+}
+
+resource "aws_security_group_rule" "cloud_egress" {
+  type              = "egress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.cloud.id
+}
+
+resource "aws_instance" "cloud" {
+  ami             = "ami-02c34db5766cc7013"
+  instance_type   = "t2.micro"
+  key_name        = aws_key_pair.cloud.key_name
+  security_groups = ["${aws_security_group.cloud.name}"]
+  tags = {
+    Name = "cloud"
+  }
+}
+
 resource "digitalocean_droplet" "cloud" {
   image     = "coreos-stable"
   name      = "cloud.jaan.xyz"
@@ -23,7 +56,7 @@ resource "digitalocean_volume_attachment" "cloud" {
 }
 
 resource "digitalocean_floating_ip" "cloud" {
-  region     = digitalocean_droplet.cloud.region
+  region = digitalocean_droplet.cloud.region
 }
 
 resource "digitalocean_floating_ip_assignment" "cloud" {

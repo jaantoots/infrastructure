@@ -18,6 +18,19 @@ variable "github_pkg_token" {
   description = "GitHub token for package registry acccess on deployments"
 }
 
+variable "aws_region" {
+  description = "AWS region"
+  default     = "eu-west-1"
+}
+
+variable "aws_access_key" {
+  description = "AWS access key"
+}
+
+variable "aws_secret_key" {
+  description = "AWS secret key"
+}
+
 variable "ssh_keys" {
   description = "SSH public keys"
   default = {

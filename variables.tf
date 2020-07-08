@@ -10,14 +10,6 @@ variable "github_token" {
   description = "GitHub personal access token"
 }
 
-variable "do_token" {
-  description = "DigitalOcean personal access token"
-}
-
-variable "github_pkg_token" {
-  description = "GitHub token for package registry acccess on deployments"
-}
-
 variable "aws_region" {
   description = "AWS region"
   default     = "eu-west-1"

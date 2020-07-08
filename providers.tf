@@ -25,6 +25,6 @@ provider "digitalocean" {
   token   = var.do_token
 }
 
-provider "ignition" {
-  version = "~> 1.1"
+provider "local" {
+  version = "~> 1.4"
 }

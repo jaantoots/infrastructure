@@ -92,19 +92,19 @@ resource "cloudflare_record" "web" {
 }
 
 resource "local_file" "cloud" {
-  filename = "${path.module}/cloud.nix"
+  filename        = "${path.module}/cloud.nix"
   file_permission = "0644"
-  content  = <<EOF
+  content         = <<EOF
 { config, pkgs, ... }:
 
 let
   sshKeys = {
-%{ for name, key in var.ssh_keys ~}
+%{for name, key in var.ssh_keys~}
     ${name} = "${key}";
-%{ endfor ~}
-%{ for name, key in var.ssh_keys_extra ~}
+%{endfor~}
+%{for name, key in var.ssh_keys_extra~}
     ${name} = "${key}";
-%{ endfor ~}
+%{endfor~}
   };
   sshKeysDefault = [ sshKeys.caracal sshKeys.falstaff sshKeys.gpd ];
 in
@@ -149,28 +149,19 @@ in
     useDefaultShell = true;
     openssh.authorizedKeys.keys = sshKeysDefault ++ [ sshKeys.gpslogger ];
   };
-  systemd.services.gpslogger = {
-    description = "Ensure gpslogger directory exists";
-    wantedBy = [ "multi-user.target" ];
-    script = "install -o gps -g nogroup -d /data/gps/gpslogger";
-    serviceConfig = {
-      Type = "oneshot";
-    };
-  };
 
   # Arch package repository
   users.users.arch = {
     useDefaultShell = true;
     openssh.authorizedKeys.keys = [ sshKeys.falstaff ];
   };
-  systemd.services.archlinux = {
-    description = "Ensure archlinux directory exists";
-    wantedBy = [ "multi-user.target" ];
-    script = "install -d /data/http && install -o arch -d /data/http/archlinux";
-    serviceConfig = {
-      Type = "oneshot";
-    };
-  };
+
+  # Create directories
+  systemd.tmpfiles.rules = [
+    "d /data/gps/gpslogger - gps nogroup - -"
+    "d /data/http - root root - -"
+    "d /data/http/archlinux - arch root - -"
+  ];
 
   # Web server
   networking.firewall.allowedTCPPorts = [ 80 443 ];

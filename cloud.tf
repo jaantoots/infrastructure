@@ -54,6 +54,9 @@ resource "aws_instance" "cloud" {
   instance_type     = "t2.micro"
   key_name          = aws_key_pair.cloud.key_name
   security_groups   = ["${aws_security_group.cloud.name}"]
+  root_block_device {
+    volume_size = 10
+  }
   tags = {
     Name = "cloud"
   }

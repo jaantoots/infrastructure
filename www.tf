@@ -2,7 +2,14 @@ resource "cloudflare_record" "www" {
   zone_id = cloudflare_zone.jaan_xyz.id
   name    = "www"
   type    = "CNAME"
-  value   = "jaan-xyz.netlify.com"
+  value   = "jaantoots.gitlab.io"
+}
+
+resource "cloudflare_record" "www_verify" {
+  zone_id = cloudflare_zone.jaan_xyz.id
+  name    = "_gitlab-pages-verification-code.www"
+  type    = "TXT"
+  value   = "gitlab-pages-verification-code=cb1b2a6602a3505ca1d7a3942669533d"
 }
 
 resource "cloudflare_record" "root" {

@@ -87,13 +87,6 @@ resource "cloudflare_record" "archlinux" {
   value   = cloudflare_record.cloud.hostname
 }
 
-resource "cloudflare_record" "web" {
-  zone_id = cloudflare_zone.jaan_xyz.id
-  name    = "web"
-  type    = "CNAME"
-  value   = cloudflare_record.cloud.hostname
-}
-
 resource "local_file" "cloud" {
   filename        = "${path.module}/cloud.nix"
   file_permission = "0644"
@@ -174,23 +167,12 @@ in
     enable = true;
     recommendedGzipSettings = true;
     recommendedOptimisation = true;
+    recommendedProxySettings = true;
     recommendedTlsSettings = true;
     virtualHosts = {
-      "${cloudflare_record.web.hostname}" = {
-        default = true;
-        forceSSL = true;
-        enableACME = true;
-        locations."/".root = "/srv/http/web";
-        extraConfig = ''
-          location ~ "^/photos/(jpeg|tiff)" {
-            return 302 "https://${cloudflare_record.cdn.hostname}/file/jaan-public$request_uri";
-          }
-        '';
-      };
-
       "${cloudflare_record.archlinux.hostname}" = {
         addSSL = true;
-        useACMEHost = "${cloudflare_record.web.hostname}";
+        enableACME = true;
         locations."/" = {
           root = "/srv/http/archlinux";
           extraConfig = "autoindex on;";
@@ -198,7 +180,6 @@ in
       };
     };
   };
-  security.acme.certs."${cloudflare_record.web.hostname}".extraDomains."${cloudflare_record.archlinux.hostname}" = null;
   fileSystems."/srv/http" = {
     device = "/data/http";
     fsType = "none";

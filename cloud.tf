@@ -159,49 +159,11 @@ in
     openssh.authorizedKeys.keys = [ sshKeys.falstaff ];
   };
 
-  # Wiki
-  users.users.gollum = {
-    group = config.users.groups.gollum.name;
-    description = "Gollum user";
-    createHome = false;
-    isSystemUser = true;
-  };
-  users.groups.gollum = { };
-  systemd.services.gollum = let
-    stateDir = "/data/wiki.git";
-  in {
-    description = "Gollum wiki";
-    after = [ "network.target" ];
-    wantedBy = [ "multi-user.target" ];
-    path = [ pkgs.git ];
-
-    preStart = ''
-      # This is safe to be run on an existing repo
-      git init --bare --shared=group $${stateDir}
-    '';
-
-    serviceConfig = {
-      User = config.users.users.gollum.name;
-      Group = config.users.groups.gollum.name;
-      ExecStart = ''
-        $${pkgs.gollum}/bin/gollum \
-          --port 4567 \
-          --host 127.0.0.1 \
-          --bare \
-          --no-edit \
-          --ref master \
-          --mathjax \
-          $${stateDir}
-      '';
-    };
-  };
-
   # Create directories
   systemd.tmpfiles.rules = [
     "d /data/gps/gpslogger - $${config.users.users.gps.name} $${config.users.users.gps.group} - -"
     "d /data/http - root root - -"
     "d /data/http/archlinux - $${config.users.users.arch.name} $${config.users.users.arch.group} - -"
-    "d /data/wiki.git - $${config.users.users.gollum.name} $${config.users.groups.gollum.name} - -"
   ];
 
   # Web server

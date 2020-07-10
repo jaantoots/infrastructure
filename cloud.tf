@@ -183,7 +183,7 @@ in
         locations."/".root = "/srv/http/web";
         extraConfig = ''
           location ~ "^/photos/(jpeg|tiff)" {
-            return 301 "https://${cloudflare_record.cdn.hostname}/file/jaan-public$request_uri";
+            return 302 "https://${cloudflare_record.cdn.hostname}/file/jaan-public$request_uri";
           }
         '';
       };

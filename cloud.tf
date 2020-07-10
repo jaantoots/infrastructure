@@ -140,7 +140,7 @@ in
     script = "git init --bare ~/password-store.git";
     serviceConfig = {
       Type = "oneshot";
-      User = "pass";
+      User = "$${config.users.users.pass.name}";
       UMask = "0077";
     };
   };
@@ -161,9 +161,9 @@ in
 
   # Create directories
   systemd.tmpfiles.rules = [
-    "d /data/gps/gpslogger - gps nogroup - -"
+    "d /data/gps/gpslogger - $${config.users.users.gps.name} $${config.users.users.gps.group} - -"
     "d /data/http - root root - -"
-    "d /data/http/archlinux - arch root - -"
+    "d /data/http/archlinux - $${config.users.users.arch.name} $${config.users.users.arch.group} - -"
   ];
 
   # Web server

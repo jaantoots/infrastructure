@@ -10,6 +10,11 @@ variable "github_token" {
   description = "GitHub personal access token"
 }
 
+variable "github_owner" {
+  description = "GitHub target account"
+  default     = "jaantoots"
+}
+
 variable "aws_region" {
   description = "AWS region"
   default     = "eu-west-1"

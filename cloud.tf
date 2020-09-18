@@ -105,9 +105,14 @@ let
   sshKeysDefault = [ sshKeys.caracal sshKeys.falstaff sshKeys.gpd ];
 in
 {
-  # Enable automatic updates
+  # Enable automatic updates and gc
   system.autoUpgrade.enable = true;
   system.autoUpgrade.allowReboot = true;
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 30d";
+  };
 
   # Define system
   programs.vim.defaultEditor = true;

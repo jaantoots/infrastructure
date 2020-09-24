@@ -10,9 +10,8 @@ resource "cloudflare_record" "auganite" {
 }
 
 module "fastmail_jaantoots_org" {
-  source         = "./fastmail"
-  zone           = cloudflare_zone.jaantoots_org
-  extra_mx_names = ["www", "cloud"]
+  source = "./fastmail"
+  zone   = cloudflare_zone.jaantoots_org
 }
 
 module "mailgun_jaantoots_org" {

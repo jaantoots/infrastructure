@@ -34,6 +34,7 @@ variable "ssh_keys" {
     caracal  = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPMTSn9LSly4Gic5/s9JqYfvRTi+ZkwoZd/YTWaxmPA7 jaan@caracal"
     falstaff = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN0xreG4XPAgqvyPqP58HYMGTjHKyh59XGDdOUgjVIEN jaan@falstaff"
     gpd      = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPMqraBY0913sVm751oqvM6tZoIQ/dBjOAIoZmukhsjo jaan@gpd"
+    galatea  = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHKRtWhiRZZ5nepSxoj1k43kvnWps+EtS1KEam1mugv8 jaan@galatea"
   }
 }
 

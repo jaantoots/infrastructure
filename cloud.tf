@@ -102,7 +102,7 @@ let
     ${name} = "${key}";
 %{endfor~}
   };
-  sshKeysDefault = [ sshKeys.caracal sshKeys.falstaff sshKeys.gpd ];
+  sshKeysDefault = [ %{for name, key in var.ssh_keys~} sshKeys.${name} %{endfor~} ];
 in
 {
   # Enable automatic updates and gc

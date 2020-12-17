@@ -2,13 +2,6 @@ resource "cloudflare_zone" "jaantoots_org" {
   zone = "jaantoots.org"
 }
 
-resource "cloudflare_record" "auganite" {
-  zone_id = cloudflare_zone.jaantoots_org.id
-  name    = "auganite"
-  type    = "CNAME"
-  value   = "auganite-jaantoots-org.nsupdate.info"
-}
-
 resource "cloudflare_record" "tll" {
   zone_id = cloudflare_zone.jaantoots_org.id
   name    = "tll"

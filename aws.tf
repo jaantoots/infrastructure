@@ -3,11 +3,6 @@ resource "aws_iam_account_password_policy" "main" {
   allow_users_to_change_password = true
 }
 
-resource "aws_key_pair" "cloud" {
-  key_name   = "cloud"
-  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDBX3YVqV+WaNW1EbD6qTdEROpMcfLEOXWTFLMwaU5kZecGu6qKdMNJTroBxrS4IqaKqCCgZiUwJQQ+UOC1j9RwCRnHbeWnT5iJxSqvsPFN/qtSHJaua6PptRuAQ7ar+/rd/jpKTp1VUMonJ7urHoi7FbgoFdsq6mtKNzdEuMtNmNNB5ajVIasoIbJBhc3BQ4DYRCIAtkpUmpoH2fwXIgo1mBtvB8hz/sFlWladCB3hqwzkpgZt1dfB7qRHV7TZapmQGygThjIFZPVufO+CZ2jmrQUWmom1XgFP9TyuwMbgGO7QoRFPMV6ikrVioJImuNdYCo/pDO+/zuKdS3ErJFxo8S2c8zsIJhqh4sO193V3taYLm4GbsAofOU4WuIahPmNNn8Qi+U71oK0/6BI3CfMNPHnqW+p3NC4zHZef40os68V8YiwYB/pboRFOC6WuYHXAIpnaUrQm+WoEn49m4r52ym5UbxWlZTr7vv/WjwmJe0W2jewWA0VvQmAF2I/1kvE= jaan-cloud"
-}
-
 data "aws_caller_identity" "current" {}
 
 resource "aws_s3_bucket" "trail" {

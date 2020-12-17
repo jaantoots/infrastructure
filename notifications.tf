@@ -1,5 +1,5 @@
 resource "aws_sns_topic" "system_alerts" {
-  name_prefix  = "system-alerts"
+  name         = "system-alerts"
   display_name = "sysalert"
 }
 
@@ -19,9 +19,9 @@ resource "aws_iam_group" "system_alerts" {
 }
 
 resource "aws_iam_group_policy" "allow_system_alerts_publish" {
-  name_prefix = "system-alerts-publish"
-  group       = aws_iam_group.system_alerts.name
-  policy      = <<-EOF
+  name   = "system-alerts-publish"
+  group  = aws_iam_group.system_alerts.name
+  policy = <<-EOF
   {
       "Version": "2012-10-17",
       "Statement": {

@@ -2,6 +2,10 @@ variable "acme_email" {
   description = "Email address used for ACME with Let's Encrypt"
 }
 
+variable "alerts_sms_number" {
+  description = "Phone number for SMS alerts"
+}
+
 variable "cloudflare_api_token" {
   description = "Cloudflare API token"
 }

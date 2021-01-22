@@ -45,7 +45,7 @@ variable "ssh_keys" {
 variable "ssh_keys_extra" {
   description = "Additional SSH public keys"
   default = {
-    pass      = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINsZZsKlFt7rK82QpFgLDnsLtDuNh7Ebsw/Ihw9aaX54 pass@dumpling"
+    pass      = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHh4q7pLAPP4hdqBwF69nvCyWQoDeH55PNBWWe3l7iZf pass@dumpling"
     gpslogger = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDHIoP5UCYh1+K432lXEk7QhiPKVa23QEtASPXLhAf54zqRy3BYWvjJRSxaJHUqxGIvc7j1SY0PbeRG9idq+XZclxjFGTsOeLqFJ/eFIt8DFD/HNrDa5pwGH7MznAbD/kYxm641D+UMiBphROfDdMFN4bQv12Bj6Tamq+be29uTUAZABanhKndmKFm2cKs9C1G7Q4EaNMYfVn9Exzy6DzulwgW+8HhPrU5imeTlFNMJIn6DTCsdc8mZ6zUF+1sp5+gCST+GahNyFGqY8cgBs1UeJ5fcgyoe8Bnl/i5OGK931pWdz2IMs1dE/Gxmj6kvJvxdiOKtVUXO+nS5ebOTP/dH gpslogger@oneplus5t"
   }
 }

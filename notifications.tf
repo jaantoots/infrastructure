@@ -33,31 +33,20 @@ resource "aws_iam_group_policy" "allow_system_alerts_publish" {
   EOF
 }
 
-resource "aws_iam_user" "box" {
-  name = "box"
-  path = "/system/"
+output "system_alerts_topic_arn" {
+  value = aws_sns_topic.system_alerts.arn
 }
 
-resource "aws_iam_user_group_membership" "box" {
-  user = aws_iam_user.box.name
+module "box" {
+  source = "./iam_user"
+
+  name = "box"
+  path = "/system/"
   groups = [
     aws_iam_group.system_alerts.name,
   ]
 }
 
-resource "aws_iam_access_key" "box" {
-  user = aws_iam_user.box.name
-}
-
-output "system_alerts_topic_arn" {
-  value = aws_sns_topic.system_alerts.arn
-}
-
-output "box-aws_access_key_id" {
-  value = aws_iam_access_key.box.id
-}
-
-output "box-aws_secret_access_key" {
-  value     = aws_iam_access_key.box.secret
-  sensitive = true
+output "iam_user-box" {
+  value = module.box
 }

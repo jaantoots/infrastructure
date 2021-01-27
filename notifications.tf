@@ -50,3 +50,17 @@ module "box" {
 output "iam_user-box" {
   value = module.box
 }
+
+module "falstaff" {
+  source = "./iam_user"
+
+  name = "falstaff"
+  path = "/system/"
+  groups = [
+    aws_iam_group.system_alerts.name,
+  ]
+}
+
+output "iam_user-falstaff" {
+  value = module.falstaff
+}

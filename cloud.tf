@@ -85,13 +85,6 @@ resource "cloudflare_record" "cloud" {
   value   = aws_instance.cloud.public_ip
 }
 
-resource "cloudflare_record" "archlinux" {
-  zone_id = cloudflare_zone.jaan_xyz.id
-  name    = "archlinux"
-  type    = "CNAME"
-  value   = cloudflare_record.cloud.hostname
-}
-
 resource "local_file" "cloud" {
   filename        = "${path.module}/cloud.nix"
   file_permission = "0644"

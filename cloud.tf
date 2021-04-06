@@ -149,45 +149,11 @@ in
     openssh.authorizedKeys.keys = sshKeysDefault ++ [ sshKeys.gpslogger ];
   };
 
-  # Arch package repository
-  users.users.arch = {
-    useDefaultShell = true;
-    openssh.authorizedKeys.keys = [ sshKeys.falstaff ];
-  };
-
   # Create directories
   systemd.tmpfiles.rules = [
     "d /data/gps/gpslogger - $${config.users.users.gps.name} $${config.users.users.gps.group} - -"
     "d /data/http - root root - -"
-    "d /data/http/archlinux - $${config.users.users.arch.name} $${config.users.users.arch.group} - -"
   ];
-
-  # Web server
-  networking.firewall.allowedTCPPorts = [ 80 443 ];
-  security.acme.acceptTerms = true;
-  security.acme.email = "${var.acme_email}";
-  services.nginx = {
-    enable = true;
-    recommendedGzipSettings = true;
-    recommendedOptimisation = true;
-    recommendedProxySettings = true;
-    recommendedTlsSettings = true;
-    virtualHosts = {
-      "${cloudflare_record.archlinux.hostname}" = {
-        addSSL = true;
-        enableACME = true;
-        locations."/" = {
-          root = "/srv/http/archlinux";
-          extraConfig = "autoindex on;";
-        };
-      };
-    };
-  };
-  fileSystems."/srv/http" = {
-    device = "/data/http";
-    fsType = "none";
-    options = [ "bind" "ro" ];
-  };
 }
 EOF
 }

@@ -48,7 +48,8 @@ module "box" {
 }
 
 output "iam_user-box" {
-  value = module.box
+  value     = module.box
+  sensitive = true
 }
 
 module "falstaff" {
@@ -62,5 +63,6 @@ module "falstaff" {
 }
 
 output "iam_user-falstaff" {
-  value = module.falstaff
+  value     = module.falstaff
+  sensitive = true
 }

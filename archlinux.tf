@@ -81,5 +81,6 @@ module "falstaff_build" {
 }
 
 output "iam_user-falstaff_build" {
-  value = module.falstaff_build
+  value     = module.falstaff_build
+  sensitive = true
 }

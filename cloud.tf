@@ -127,7 +127,7 @@ in
     createHome = true;
     home = "/data/pass";
     shell = "/run/current-system/sw/bin/git-shell";
-    openssh.authorizedKeys.keys = sshKeysDefault ++ [ sshKeys.pass sshKeys.ipad ];
+    openssh.authorizedKeys.keys = sshKeysDefault ++ [ sshKeys.pass sshKeys.ipad sshKeys.iphone ];
   };
   systemd.services.password-store = {
     description = "Initialize password store";
